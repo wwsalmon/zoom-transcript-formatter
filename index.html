@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+            name="viewport"
+            content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    >
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Zoom Transcript Formatter by Samson Zhang</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.classless.min.css">
+</head>
+<body>
+    <main>
+        <h1>Zoom transcript formatter</h1>
+        <p>Copy + paste in your full Zoom transcript below:</p>
+        <textarea name="transcript-in" id="transcript-in" cols="30" rows="10" placeholder="WEBVTT
+
+1
+00:00:02.490 --> 00:00:07.440
+Samson Zhang: Great so first, can I just get your name your year and preferred pronouns.
+
+..."></textarea>
+        <button id="format-button" onclick="formatButtonClicked()">Format</button>
+        <textarea name="transcript-out" id="transcript-out" cols="30" rows="10" readonly placeholder="Formatted output"></textarea>
+        <script>
+            const transcriptInBox = document.getElementById("transcript-in");
+            const transcriptOutBox = document.getElementById("transcript-out");
+
+            function formatButtonClicked() {
+                const inputText = transcriptInBox.value;
+                const inputArr = inputText.split("\n");
+                let outputArr = [];
+
+                for (let i in inputArr) {
+                    if (i < 2) continue;
+                    const shiftedIndex = i - 1;
+                    if (shiftedIndex % 4 !== 3) continue;
+                    const thisItem = inputArr[i];
+                    if (!outputArr.length) {
+                        outputArr.push(thisItem);
+                        continue;
+                    }
+                    const thisName = thisItem.split(":")[0];
+                    const prevItem = outputArr[outputArr.length - 1];
+                    const prevName = prevItem.split(":")[0];
+                    if (thisName === prevName) {
+                        outputArr.pop();
+                        outputArr.push(prevItem + " " + thisItem.substr(thisName.length + 2));
+                        continue;
+                    }
+                    outputArr.push(thisItem);
+                }
+
+                const outputText = outputArr.join("\n\n");
+
+                transcriptOutBox.value = outputText;
+            }
+        </script>
+        <h2>Explanation</h2>
+        <p>Zoom transcripts are awesome, but their formatting doesn't make for a great reading experience:</p>
+        <blockquote style="white-space: pre-line">33
+00:02:24.720 --> 00:02:32.850
+Samson Zhang: gotcha gotcha okay and going back to kind of like the room saturation like what does it feel like what are the amenities like is it like a really nice.
+
+34
+00:02:33.480 --> 00:02:33.990
+Yuki Wang: it's really.
+
+35
+00:02:35.130 --> 00:02:36.900
+Yuki Wang: it's really knew like.
+
+36
+00:02:37.110 --> 00:02:50.280
+Yuki Wang: I was honestly kind of shocked when I moved in on the first day because, like the kitchen looks super new even like the fresh looks newer probably then saw the mud sweet bridges.
+
+37
+00:02:52.170 --> 00:02:59.040
+Yuki Wang: Yes, and yeah everything looks really nice if I say probably built this apartment recently.
+        </blockquote>
+        <p>This formatter cuts out the dates and timecodes and combines dialogue from the same person to the same line. Here's what the formatted output for the above excerpt looks like:</p>
+        <blockquote style="white-space: pre-line">Samson Zhang: gotcha gotcha okay and going back to kind of like the room saturation like what does it feel like what are the amenities like is it like a really nice.
+
+Yuki Wang: it's really. it's really knew like. I was honestly kind of shocked when I moved in on the first day because, like the kitchen looks super new even like the fresh looks newer probably then saw the mud sweet bridges. Yes, and yeah everything looks really nice if I say probably built this apartment recently.
+        </blockquote>
+        <p>See the code for this formatter and make contributions on <a href="">GitHub</a></p>
+    </main>
+</body>
+</html>
